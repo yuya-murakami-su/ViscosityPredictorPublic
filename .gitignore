@@ -1,0 +1,74 @@
+# Local data and private development resources
+/dataset/raw/
+/dataset/script/
+/dataset/input/*
+!/dataset/input/.gitkeep
+/murakami_lab_modules-*/
+/AGENTS.md
+
+# IDE and editor settings
+/.idea/
+/.vscode/
+*.code-workspace
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+
+# Virtual environments and local environment variables
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+
+# Test, coverage, and type-checking outputs
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Build and packaging outputs
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local experiment and training outputs
+/outputs/
+/runs/
+/logs/
+/checkpoints/
+/wandb/
+/mlruns/
+/lightning_logs/
+*.log
+
+# Local pretrained-model training artifacts
+/pretrained_model/interpolation_training/
+/pretrained_model/extrapolation_training/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*~
+/edit_note.md

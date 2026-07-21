@@ -1,0 +1,69 @@
+[paths]
+# Training CSV path, relative to the repository root unless an absolute path is given.
+training_csv = "dataset/input/viscosity_data.csv"
+# Directory for search results, metadata, and final model files.
+output_dir = "outputs/training"
+
+[cross_validation]
+# Number of Similarity-graph cross-validation folds; must be at least 2.
+n_folds = 5
+# Random seed used to reproduce the Similarity-graph partition.
+split_seed = 0
+
+[temperature]
+# Maximum total temperature width, in K, grouped into one representative measurement.
+cluster_tolerance_K = 0.03
+# Quantile defining high-temperature validation within each non-structure fold (0.90 = upper 10%).
+high_temperature_validation_quantile = 0.90
+# Minimum regularization temperature in K; it must not exceed the dataset minimum.
+collocation_min_K = 200.0
+# Maximum regularization temperature in K; it must not be below the dataset maximum.
+collocation_max_K = 450.0
+
+[collocation]
+# Standard deviation of Gaussian descriptor coordinates for Hessian regularization after scaling.
+hessian_descriptor_std_multiplier = 2.0
+# Standard deviation of Gaussian descriptor coordinates for Soft Arrhenius regularization after scaling.
+soft_descriptor_std_multiplier = 1.0
+
+[training]
+# Number of training samples processed in each optimization batch.
+batch_size = 256
+# Maximum number of epochs for each cross-validation fit.
+max_epochs = 3000
+# Number of epochs without validation-score improvement before early stopping.
+early_stopping_patience = 50
+# Number of regularization points generated for each fitted model.
+collocation_samples = 1024
+
+[descriptors]
+# Descriptor blocks whose non-empty subsets are evaluated during native-NN selection.
+candidates = [
+  "physicochemical_descriptors",
+  "magpie_elemental_properties",
+  "topological_indices",
+  "complexity_related_indices",
+  "e_state_indices",
+]
+
+[nn_search]
+# Candidate numbers of hidden layers; all nn_search lists are evaluated as a Cartesian product.
+hidden_layers = [3]
+# Candidate numbers of nodes in each hidden layer.
+hidden_units = [256, 512]
+# Candidate AdamW learning rates.
+learning_rates = [1.0e-3]
+# Candidate AdamW weight-decay coefficients.
+weight_decays = [0.0, 1.0e-3, 1.0e-1]
+
+[regularization_search]
+# Candidate Hessian regularization coefficients for the Joint-NN grid search.
+hessian_lambdas = [0.0, 0.1, 1.0, 10.0, 100.0]
+# Candidate Soft Arrhenius regularization coefficients for the Joint-NN grid search.
+soft_lambdas = [0.0, 1.0e-3, 1.0e-2, 1.0e-1, 1.0]
+
+[seeds]
+# Random seeds repeated for every cross-validation candidate and coefficient pair.
+search = [1, 2, 3]
+# Random seeds used to train the final full-data ensemble members.
+ensemble = [1, 2, 3, 4, 5]
