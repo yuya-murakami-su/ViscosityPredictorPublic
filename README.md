@@ -2,6 +2,8 @@
 
 This repository provides a compact, reproducible workflow for selecting, training, saving, and using a jointly regularized neural network for pure-component viscosity prediction.
 
+A lightweight browser version is available at [ViscoPredict](https://murakami-yuya-lab.com/tools/viscosity-prediction/). It uses a simplified, lower-accuracy model for quick estimates without installing the Python workflow.
+
 The workflow combines two curvature penalties:
 
 - Hessian regularization along molecular-descriptor directions
@@ -50,6 +52,8 @@ This command installs the project dependencies, including `murakami_lab_modules`
 ```bash
 python -c "import torch, pymetis; from importlib.metadata import version; print('PyTorch:', torch.__version__); print('PyMetis:', version('pymetis')); print('murakami_lab_modules:', version('murakami_lab_modules')); print('CUDA available:', torch.cuda.is_available())"
 ```
+
+RDKit 2026.3.4 and Matminer 0.10.1 are pinned in `pyproject.toml` because molecular-descriptor values are model inputs and must remain consistent with the versions used to train the published pretrained models.
 
 The training workflow uses CUDA automatically when this command returns `True`; otherwise it uses the CPU.
 
@@ -153,9 +157,44 @@ outputs/training/
 
 The run manifest protects resumed calculations from incompatible conditions. The model metadata records the workflow configuration, selected descriptor columns, train-fitted filters and normalizers, NN architecture, regularization coefficients, collocation settings, fixed epoch count, ensemble seeds, and dependency versions.
 
+## Pretrained models
+
+Two pretrained five-member ensembles are distributed in [`pretrained_model/`](pretrained_model/). Both were trained exclusively on the viscosity data published in the Supporting Information of Chew et al., *Advancing material property prediction: using physics-informed machine learning models for viscosity*, *Journal of Cheminformatics* **16**, 31 (2024), [https://doi.org/10.1186/s13321-024-00820-5](https://doi.org/10.1186/s13321-024-00820-5). The publication makes this public dataset subset available under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+
+Model selection is intentionally manual. This repository does not distribute a training-compound registry and does not automatically determine whether an input structure was represented during training.
+
+| CLI selection | Use when | Model-selection validation | Main model configuration |
+|---|---|---|---|
+| `seen-structure` | The queried molecular structure was represented in the training dataset | Five-fold temperature-interpolation validation within represented structures | 17 inputs; three 256-unit hidden layers; Soft Arrhenius coefficient 0.1 |
+| `unseen-structure` | The queried molecular structure was not represented in the training dataset, or its status is uncertain | Five-fold integrated similarity-graph structure holdout and upper-temperature holdout | 67 inputs; three 512-unit hidden layers; Hessian coefficient 10 and Soft Arrhenius coefficient 0.1 |
+
+The `seen-structure` model can also be selected when a represented substance is queried outside its measured temperature range. This remains a temperature extrapolation; the model name describes structural coverage, not temperature coverage.
+
+Both final ensembles were refitted on all 3,544 effective observations from 957 canonical molecular structures after model selection. Their saved final weights therefore do not have an independent test set. See the [pretrained-model card](pretrained_model/MODEL_CARD.md) for descriptor blocks, training fingerprints, intended uses, and limitations.
+
 ## Prediction
 
-Prepare a CSV with `compound_id`, `smiles`, and `temperature_K`, then specify the model bundle produced by the training workflow:
+Prepare a CSV with `compound_id`, `smiles`, and `temperature_K`.
+
+To use the model for a molecular structure represented during training, run:
+
+```bash
+python scripts/predict.py \
+  --input path/to/prediction_data.csv \
+  --pretrained-model seen-structure \
+  --output outputs/predictions.csv
+```
+
+To use the model intended for an unseen or uncertain molecular structure, run:
+
+```bash
+python scripts/predict.py \
+  --input path/to/prediction_data.csv \
+  --pretrained-model unseen-structure \
+  --output outputs/predictions.csv
+```
+
+To use a custom model trained with this workflow instead, specify its bundle directory explicitly. `--model` and `--pretrained-model` are mutually exclusive:
 
 ```bash
 python scripts/predict.py \
@@ -168,10 +207,20 @@ A model bundle must contain `metadata.json` and the referenced `models/seed_*.pt
 
 The output contains each seed's prediction, the arithmetic ensemble mean in `ln(viscosity_Pa_s)`, the sample standard deviation across seeds, and the corresponding predictions in Pa s and cP. The same canonicalization, descriptor order, feature filter, and normalizers saved during training are reapplied automatically.
 
+Machine-readable model paths, training fingerprints, and SHA-256 digests are recorded in the [pretrained-model manifest](pretrained_model/manifest.json). Verify every digest and safely load all ten weight files with:
+
+```bash
+python scripts/verify_pretrained_models.py
+```
+
 ## Data and generated artifacts
 
-The `dataset/input` and `outputs` directories are excluded from Git by default. Training data, search results, rankings, run manifests, workflow summaries, and trained model bundles are not distributed with this repository.
+The `dataset/input` and `outputs` directories are excluded from Git by default. The source training dataset, search results, rankings, run manifests, workflow summaries, and other intermediate training artifacts are not distributed with this repository.
+
+The published pretrained bundles contain only the metadata and final ensemble weights required for prediction. Users should obtain the source data from the cited publication and comply with its CC BY-NC 4.0 license.
 
 ## License
 
 The source code is available under the [MIT License](LICENSE).
+
+All artifacts in `pretrained_model/`, including the model metadata and weight files, are separately distributed under the [Creative Commons Attribution-NonCommercial 4.0 International License](pretrained_model/LICENSE.md). Commercial use of these pretrained model artifacts is not permitted under that license. The source dataset is not redistributed by this repository and is also provided by its authors under CC BY-NC 4.0.

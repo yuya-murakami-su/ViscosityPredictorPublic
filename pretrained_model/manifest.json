@@ -1,0 +1,49 @@
+{
+  "format_version": 1,
+  "artifact_family": "viscosity_joint_nn_ensemble",
+  "release_version": "1.0.0",
+  "automatic_structure_detection": false,
+  "license": {
+    "pretrained_model_artifacts": "CC-BY-NC-4.0",
+    "notice": "LICENSE.md",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "training_data": {
+    "citation": "Chew, A. K. et al. Advancing material property prediction: using physics-informed machine learning models for viscosity. Journal of Cheminformatics 16, 31 (2024).",
+    "doi": "10.1186/s13321-024-00820-5",
+    "source": "Publicly accessible Supporting Information",
+    "license": "CC-BY-NC-4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "included_in_repository": false
+  },
+  "models": {
+    "seen-structure": {
+      "path": "seen",
+      "intended_use": "Manual selection for substances whose molecular structure was represented in the training dataset.",
+      "selection_strategy": "temperature_interpolation",
+      "training_fingerprint": "9832e19721abcfb1b7875e90e91b1ca24819293584c05ad324759a910d4dffd3",
+      "artifacts": {
+        "metadata.json": "fa6991ce11dd937e9b1b425801264a530392fbaac5399495b94b413d672bd0ed",
+        "models/seed_1.pt": "090ad7f15088e55208f4583ca77526edfccf9a6d658b67b805ec45d7f037e216",
+        "models/seed_2.pt": "2f7b34214c064f43c7d6587d05d0c9ca9d585141d5028d754bef56f5f214bd9d",
+        "models/seed_3.pt": "80608d5f9c83249a3eceb1782de777c91e37f169c7499535d146b3586a3da8cf",
+        "models/seed_4.pt": "9aaf478a8c6409386528ff8bd6daed1db5f04ef2c69244ef2ddb8c0ce7248769",
+        "models/seed_5.pt": "7f2bda318ad2bf2d2df7b518059705cc3c9b6e6858f3fbcdf193767f0469bcef"
+      }
+    },
+    "unseen-structure": {
+      "path": "unseen",
+      "intended_use": "Manual selection for substances whose molecular structure was not represented in the training dataset.",
+      "selection_strategy": "integrated_structure_and_high_temperature",
+      "training_fingerprint": "fdc43fdbbd92610d0dcde4ec5e3d9152ee544c28ce6c6322c6dc39f72b0e8a27",
+      "artifacts": {
+        "metadata.json": "1b3050028d0c821ad71283339131773ad4a604a34957a07c3aeccd467fb8f8e1",
+        "models/seed_1.pt": "46e25345c3dc9d489ce41bfa736b3655daafdaaa20d2d8b9d00e5b25b3976118",
+        "models/seed_2.pt": "1cd564e2cfc2fd0746d05dcef064fda709b83a5844605d6a86772c253211ed0c",
+        "models/seed_3.pt": "c5589f7e90b943bef3568d7d9a1c11e5f6e43313bb1f1033b5d9bfaf0e5ef0f3",
+        "models/seed_4.pt": "d54f2991f04ac9bb9d7a35af01eaca13f7d336d911151a1ac163416f947f73b1",
+        "models/seed_5.pt": "17428e436f28e4cb128d362f25eb1b4cb353c8494f6c6cf0864a2c0b07a06b32"
+      }
+    }
+  }
+}
